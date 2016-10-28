@@ -36,7 +36,7 @@ Monkee-Boy uses Vagrant for local dev environments. This VM mirrors our Habitat 
 #### Quick Add
 
 * Edit `./vhostalias.sh` with your vagrant id. Get this by running `vagrant global-status`.
-* Setup `alias vagrantvhost="sh ~/Sites/PuPHPet/vagrantvhost.sh"` as an alias. Modify the path to this vagrant repo.
+* Setup `alias vagrantvhost="sh ~/Sites/PuPHPet/vhostalias.sh"` as an alias. Modify the path to this vagrant repo.
 * Add new domain with `vagrantvhost client-domain.dev /var/www/clientname/site`. This will automatically include a server alias of www.
 * Feel free to modify the alias to whatever is easier for you.
 
