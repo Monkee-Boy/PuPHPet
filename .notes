@@ -1,0 +1,5 @@
+> Dump all MySQL databases into a single file.
+`mysqldump -u root -p --verbose --all-databases > alldb.sql`
+
+> Import MySQL databases from the above dump.
+`mysql -u root -p < alldb.sql`
