@@ -50,7 +50,7 @@ We recommend using [SequelPro](http://www.sequelpro.com/) for easy database mana
 * Pass: `root`
 * SSH Host: `192.168.22.10`
 * SSH User: `vagrant`
-* SSH Password: Select `./puphpet/files/dot/ssh/id_rsa`. This key is generated after your initial `vagrant up`.
+* SSH Password/Key: Select `./puphpet/files/dot/ssh/id_rsa`. This key is generated after your initial `vagrant up`.
 
 
 ## The Dev Team
