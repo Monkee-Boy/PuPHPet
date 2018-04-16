@@ -28,9 +28,9 @@ Monkee-Boy uses Vagrant for local dev environments. This VM mirrors our Habitat 
 ### Add Domain
 
 * `cd` to this git repo.
-* `vagrant ssh -c 'sudo vhost -s client-domain.dev -a www.client-domain.dev -d /var/www/path-to-the-client-site'`
+* `vagrant ssh -c 'sudo vhost -s client-domain.test -a www.client-domain.test -d /var/www/path-to-the-client-site'`
   * `-s` is the server name, `-a` is the server alias, `-d` is the document root.
-* Edit your hosts file with `192.168.22.10 client-domain.dev`.
+* Edit your hosts file with `192.168.22.10 client-domain.test`.
 * http://client-domain.dev should now work.
 
 #### Quick Add
