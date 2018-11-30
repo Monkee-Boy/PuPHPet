@@ -28,6 +28,9 @@ vagrantfile:
                                 vflmnfp_mxdes078dl4g:
                                     host: '6348'
                                     guest: '22'
+                                vflmnfp_g70p2ojpzwcr:
+                                    host: '9095'
+                                    guest: '9095'
                         memory: '512'
                         cpus: '1'
         provision:
