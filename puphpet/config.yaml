@@ -3,8 +3,8 @@ vagrantfile:
     vm:
         provider:
             local:
-                box: puphpet/ubuntu1604-x64
-                box_url: puphpet/ubuntu1604-x64
+                box: bento/ubuntu-16.04
+                box_url: 'false'
                 box_version: '0'
                 chosen_virtualizer: virtualbox
                 virtualizers:
@@ -20,10 +20,10 @@ vagrantfile:
                         update_guest_tools: 0
                 machines:
                     vflm_e1ebsvfb0hcf:
-                        id: localdev1
-                        hostname: localdev1.puphpet
+                        id: localdev2
+                        hostname: localdev2.puphpet
                         network:
-                            private_network: 192.168.22.10
+                            private_network: 192.168.22.14
                             forwarded_port:
                                 vflmnfp_mxdes078dl4g:
                                     host: '6348'
@@ -41,9 +41,11 @@ vagrantfile:
                     - puphpet/puppet/manifests
                 options:
                     - '--verbose'
-                    - '--hiera_config /vagrant/puphpet/puppet/hiera.yaml'
+                    - '--hiera_config /opt/puphpet/puppet/hiera.yaml'
         synced_folder:
             vflsf_dfjih0hmpcgu:
+                owner: www-data
+                group: www-data
                 source: ../
                 target: /var/www
                 sync_type: default
@@ -63,8 +65,6 @@ vagrantfile:
                         - .vagrant/
                         - .git/
                     auto: 'true'
-                owner: www-data
-                group: www-data
         usable_port_range:
             start: 10200
             stop: 10500
@@ -107,6 +107,13 @@ locale:
 firewall:
     install: '1'
     rules: {  }
+resolv:
+    install: '1'
+    nameservers:
+        - 8.8.8.8
+        - 8.8.4.4
+    domainname: ''
+    searchpath: {  }
 cron:
     install: '1'
     jobs: {  }
@@ -131,17 +138,12 @@ nginx:
             listen_port: '80'
             client_max_body_size: 1m
             ssl: '0'
-            ssl_cert: ''
-            ssl_key: ''
-            ssl_port: '443'
-            ssl_protocols: ''
-            ssl_ciphers: ''
-            rewrite_to_https: '1'
-            spdy: '1'
             locations:
                 nxvl_37y5plwj43e5:
                     www_root: ''
                     location: /
+                    autoindex: 'off'
+                    internal: 'false'
                     index_files:
                         - index.html
                         - index.htm
@@ -150,28 +152,23 @@ nginx:
                         - $uri
                         - $uri/
                         - /index.php$is_args$args
-                    fastcgi: ''
-                    fastcgi_index: ''
-                    fastcgi_split_path: ''
-                    proxy: ''
-                    proxy_redirect: ''
                 nxvl_66mcctvppvib:
                     www_root: ''
                     location: '~ \.php$'
+                    autoindex: 'off'
+                    internal: 'false'
                     try_files:
                         - $uri
                         - $uri/
                         - /index.php$is_args$args
+                    set:
+                        - '$path_info $fastcgi_path_info'
                     fastcgi: '127.0.0.1:9000'
                     fastcgi_index: index.php
                     fastcgi_split_path: '^(.+\.php)(/.*)$'
                     fast_cgi_params_extra:
                         - 'SCRIPT_FILENAME $request_filename'
                         - 'APP_ENV dev'
-                    set:
-                        - '$path_info $fastcgi_path_info'
-                    proxy: ''
-                    proxy_redirect: ''
     proxies: {  }
 apache:
     install: '1'
@@ -184,34 +181,33 @@ apache:
         manage_group: false
         sendfile: 0
     modules:
-        - proxy_fcgi
-        - rewrite
         - deflate
         - expires
         - pagespeed
+        - proxy_fcgi
+        - rewrite
         - vhost_alias
     vhosts:
         av_25qgtanbhnwr:
-            servername: localdev.dev
+            servername: localdev2.dev
             serveraliases:
-                - www.localdev.dev
+                - www.localdev2.dev
             docroot: /var/www
             port: '80'
-            setenv:
-                - 'APP_ENV dev'
             setenvif:
                 - 'Authorization "(.*)" HTTP_AUTHORIZATION=$1'
-            custom_fragment: ''
             ssl: '0'
-            ssl_cert: ''
-            ssl_key: ''
-            ssl_chain: ''
-            ssl_certs_dir: ''
+            ssl_cert: LETSENCRYPT
+            ssl_key: LETSENCRYPT
+            ssl_chain: LETSENCRYPT
+            ssl_certs_dir: LETSENCRYPT
             ssl_protocol: ''
             ssl_cipher: ''
             directories:
                 avd_iia1f0rd5oy1:
+                    provider: directory
                     path: /var/www
+                    directoryindex: ''
                     options:
                         - Indexes
                         - FollowSymlinks
@@ -220,29 +216,21 @@ apache:
                         - All
                     require:
                         - 'all granted'
-                    custom_fragment: ''
-                    files_match:
-                        avdfm_k4tdwkj0jhck:
-                            path: \.php$
-                            sethandler: 'proxy:fcgi://127.0.0.1:9000'
-                            custom_fragment: ''
-                            provider: filesmatch
-                    provider: directory
 letsencrypt:
     install: '1'
     settings:
         email: ''
+        webserver_service: ''
     domains: {  }
 php:
     install: '1'
     settings:
-        version: '7.0'
+        version: '7.2'
     modules:
         php:
             - cli
             - intl
             - xml
-            - gd
         pear: {  }
         pecl: {  }
     ini:
@@ -285,11 +273,8 @@ blackfire:
             agent_timeout: '0.25'
             log_file: ''
             log_level: '1'
-xhprof:
-    install: '0'
 wpcli:
     install: '1'
-    version: v0.24.1
 drush:
     install: '0'
     version: 8.0.5
@@ -299,7 +284,7 @@ ruby:
         rv_n81ar15vn5rq:
             default: '1'
             bundler: '1'
-            version: 2.2.3
+            version: '2.2'
             gems:
                 - deep_merge@1.0.1
                 - activesupport@4.2.6
@@ -311,29 +296,14 @@ python:
 nodejs:
     install: '1'
     settings:
-        version: '4'
+        version: '8'
     npm_packages: {  }
-hhvm:
-    install: '0'
-    composer: '1'
-    composer_home: ''
-    settings: {  }
-    server_ini:
-        hhvm.server.host: 127.0.0.1
-        hhvm.server.port: '9000'
-        hhvm.log.use_log_file: '1'
-        hhvm.log.file: /var/log/hhvm/error.log
-    php_ini:
-        display_errors: 'On'
-        error_reporting: '-1'
-        date.timezone: UTC
 mariadb:
     install: '0'
     settings:
         version: '10.1'
         root_password: '123'
         override_options: {  }
-    adminer: 0
     users:
         mariadbnu_idqqn47mnigz:
             name: dbuser
@@ -341,6 +311,7 @@ mariadb:
     databases:
         mariadbnd_u7p2xkfmj7lf:
             name: dbname
+            collate: ''
             sql: ''
     grants:
         mariadbng_btt4jh9rrecy:
@@ -354,7 +325,6 @@ mysql:
         version: '5.7'
         root_password: root
         override_options: {  }
-    adminer: 0
     users: {  }
     databases: {  }
     grants: {  }
@@ -369,14 +339,13 @@ postgresql:
     databases: {  }
     users: {  }
     grants: {  }
-    adminer: 0
 mongodb:
     install: '0'
     settings:
         bind_ip: 127.0.0.1
         port: '27017'
     globals:
-        version: 2.6.0
+        version: 3.6.2
     databases: {  }
 redis:
     install: '0'
@@ -384,7 +353,6 @@ redis:
         port: '6379'
 sqlite:
     install: '1'
-    adminer: 0
     databases: {  }
 mailhog:
     install: '1'
@@ -420,8 +388,3 @@ elastic_search:
     instances:
         esi_zjdm5vdia3nw:
             name: es-01
-solr:
-    install: '0'
-    settings:
-        version: 5.5.2
-        port: '8984'
